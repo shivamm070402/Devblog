@@ -357,7 +357,7 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 ## 📞 Contact
 
-**Author:** Rathan Kumar  
+**Author:** Shivam Mohite  
 **GitHub:** [@shivamm070402](https://github.com/shivamm070402)  
 **Repository:** [Devblog](https://github.com/shivamm070402/Devblog)
 
