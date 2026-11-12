@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.name }} – DevBlog{% endblock %}
+
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-between mb-4" style="margin-top:.5rem">
+  <div>
+    <nav style="font-size:.8rem;color:var(--text-muted);margin-bottom:.5rem">
+      <a href="{% url 'blog:post_list' %}" style="color:var(--text-muted)"><i class="fas fa-home"></i> Home</a>
+      <span style="margin:0 .4rem">/</span>
+      <span>{{ category.name }}</span>
+    </nav>
+    <h1 style="font-family:var(--font-serif);font-size:2rem;font-weight:900;color:var(--text);margin:0">
+      {{ category.name }}
+    </h1>
+    <p style="color:var(--text-muted);margin-top:.3rem;font-size:.9rem">
+      {{ posts.count }} article{{ posts.count|pluralize }} in this category
+    </p>
+  </div>
+  <div style="width:56px;height:56px;border-radius:50%;background:var(--accent-soft);
+              display:flex;align-items:center;justify-content:center;font-size:1.6rem">
+    {% if category.slug == 'system-design' %}🏗️
+    {% elif category.slug == 'technology' %}💻
+    {% elif category.slug == 'sports' %}🏏
+    {% elif category.slug == 'health' %}💚
+    {% elif category.slug == 'travel' %}✈️
+    {% else %}📂{% endif %}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    {% if posts %}
+    <div class="card-grid" style="grid-template-columns:1fr">
+      {% for post in posts %}
+      <article class="post-card animate-in" style="display:grid;grid-template-columns:180px 1fr;overflow:hidden"
+        onclick="location.href='{% url 'blog:post_detail' post.slug %}'">
+        <div class="post-card-thumb no-image"
+          style="height:100%;min-height:130px;border-radius:0;background:{{ post.card_gradient }}">
+          <span style="font-size:2.2rem">{{ post.card_emoji }}</span>
+        </div>
+        <div style="padding:1rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.4rem">
+              {{ post.created_at|date:"F j, Y" }}
+            </div>
+            <h3 class="post-card-title">{{ post.title }}</h3>
+            <p class="post-card-excerpt" style="-webkit-line-clamp:2">{{ post.get_excerpt }}</p>
+          </div>
+          <div class="d-flex align-items-center justify-content-between mt-2">
+            <div class="post-card-author">
+              <div class="author-avatar">{{ post.author.username|first|upper }}</div>
+              <span style="font-size:.8rem">{{ post.author.get_full_name|default:post.author.username }}</span>
+            </div>
+            <span style="font-size:.75rem;color:var(--accent);font-weight:600">
+              <i class="fas fa-clock"></i> {{ post.reading_time }} min
+            </span>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div
+      style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:3rem;text-align:center">
+      <i class="fas fa-inbox"
+        style="font-size:3rem;color:var(--accent);opacity:.3;margin-bottom:1rem;display:block"></i>
+      <p style="color:var(--text-muted)">No posts in this category yet.</p>
+      <a href="{% url 'blog:post_list' %}">← Browse all posts</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <aside class="col-lg-4 mt-4 mt-lg-0">
+    <div class="sticky-sidebar">
+      <div class="sidebar-card">
+        <h5><i class="fas fa-layer-group text-accent mr-2"></i>All Categories</h5>
+        {% for cat in categories %}
+        <a href="{% url 'blog:category_posts' cat.slug %}"
+          class="category-pill d-flex {% if cat.slug == category.slug %}active{% endif %}"
+          style="{% if cat.slug == category.slug %}background:var(--accent-soft);color:var(--accent){% endif %}">
+          <span>{{ cat.name }}</span>
+          <span class="cat-count">{{ cat.posts.count }}</span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </aside>
+</div>
+
+{% endblock %}

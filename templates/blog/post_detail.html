@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ post.title }} – DevBlog{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Table of contents */
+  .toc {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+    font-size: .875rem;
+  }
+
+  .toc-title {
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: .6rem;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+  }
+
+  .toc ol {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  .toc li {
+    margin-bottom: .3rem;
+  }
+
+  .toc a {
+    color: var(--text-muted);
+  }
+
+  .toc a:hover {
+    color: var(--accent);
+  }
+
+  /* Share buttons */
+  .share-bar {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .share-btn {
+    padding: .4rem 1rem;
+    border-radius: var(--radius-pill);
+    font-size: .8rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+  }
+
+  .share-btn.twitter {
+    background: #e8f5fe;
+    color: #1da1f2;
+  }
+
+  .share-btn.linkedin {
+    background: #e8f0fe;
+    color: #0077b5;
+  }
+
+  .share-btn.copy {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Architecture diagram labels adapt to dark mode */
+  [data-theme="dark"] .d-label-dark {
+    fill: #e6edf3 !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row" style="margin-top:.5rem">
+
+  <!-- ══ ARTICLE ══ -->
+  <div class="col-lg-8">
+
+    <!-- Back breadcrumb -->
+    <nav style="font-size:.8rem;color:var(--text-muted);margin-bottom:1.25rem" aria-label="breadcrumb">
+      <a href="{% url 'blog:post_list' %}" style="color:var(--text-muted)"><i class="fas fa-home"></i> Home</a>
+      {% if post.category %}
+      <span style="margin:0 .4rem">/</span>
+      <a href="{% url 'blog:category_posts' post.category.slug %}" style="color:var(--text-muted)">{{ post.category.name
+        }}</a>
+      {% endif %}
+      <span style="margin:0 .4rem">/</span>
+      <span>{{ post.title|truncatechars:40 }}</span>
+    </nav>
+
+    <!-- Article header -->
+    <div class="article-header animate-in">
+      {% if post.category %}
+      <a href="{% url 'blog:category_posts' post.category.slug %}"
+        class="tag tag-{{ post.category.slug|slugify }} mb-3 d-inline-block">
+        {{ post.category.name }}
+      </a>
+      {% endif %}
+
+      <h1 class="article-title">{{ post.title }}</h1>
+
+      <div class="article-meta">
+        <div class="d-flex align-items-center" style="gap:.4rem">
+          <div class="author-avatar" style="width:32px;height:32px;font-size:.8rem">
+            {{ post.author.username|first|upper }}
+          </div>
+          <strong>{{ post.author.get_full_name|default:post.author.username }}</strong>
+        </div>
+        <span>·</span>
+        <span><i class="fas fa-calendar-alt mr-1"></i>{{ post.created_at|date:"F j, Y" }}</span>
+        <span>·</span>
+        <span><i class="fas fa-clock mr-1"></i>{{ post.reading_time }} min read</span>
+        {% if post.updated_at != post.created_at %}
+        <span>·</span>
+        <span style="font-size:.78rem"><i class="fas fa-sync-alt mr-1"></i>Updated {{ post.updated_at|date:"N j, Y"
+          }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if post.image %}
+    <img src="{{ post.image.url }}" class="img-fluid rounded mb-4" alt="{{ post.title }}"
+      style="max-height:420px;width:100%;object-fit:cover">
+    {% endif %}
+
+    <!-- Article body (supports diagrams injected per post) -->
+    <div class="article-body animate-in">
+      {{ post.body|linebreaksbr }}
+    </div>
+
+    <!-- Inline diagrams rendered by JS from data attributes on the page -->
+    {% if post.has_diagrams %}
+    <div id="article-diagrams"></div>
+    {% endif %}
+
+    <!-- Share bar -->
+    <div class="share-bar animate-in">
+      <span style="font-size:.85rem;font-weight:600;color:var(--text-muted)">
+        <i class="fas fa-share-alt mr-1"></i>Share:
+      </span>
+      <button class="share-btn twitter"
+        onclick="window.open('https://twitter.com/intent/tweet?text={{ post.title|urlencode }}&url='+encodeURIComponent(location.href))">
+        <i class="fab fa-twitter"></i> Twitter
+      </button>
+      <button class="share-btn linkedin"
+        onclick="window.open('https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(location.href))">
+        <i class="fab fa-linkedin"></i> LinkedIn
+      </button>
+      <button class="share-btn copy" id="copyBtn" onclick="copyLink()">
+        <i class="fas fa-link"></i> Copy Link
+      </button>
+    </div>
+
+    <hr style="border-color:var(--border);margin:2rem 0">
+    <a href="{% url 'blog:post_list' %}" style="color:var(--text-muted);font-size:.875rem">
+      <i class="fas fa-arrow-left mr-1"></i> Back to all posts
+    </a>
+  </div>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="col-lg-4 mt-4 mt-lg-0">
+    <div class="sticky-sidebar">
+
+      <!-- Related posts -->
+      {% if related %}
+      <div class="sidebar-card">
+        <h5><i class="fas fa-link text-accent mr-2"></i>Related Posts</h5>
+        {% for r in related %}
+        <a href="{% url 'blog:post_detail' r.slug %}"
+          style="display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.85rem;text-decoration:none">
+          <div style="width:38px;height:38px;border-radius:var(--radius-sm);background:{{ r.card_gradient }};
+                      display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">
+            {{ r.card_emoji }}
+          </div>
+          <div>
+            <div style="font-size:.85rem;font-weight:600;color:var(--text);line-height:1.3">{{ r.title }}</div>
+            <div style="font-size:.75rem;color:var(--text-muted)">{{ r.created_at|date:"N j, Y" }}</div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Post info -->
+      <div class="sidebar-card">
+        <h5><i class="fas fa-info-circle text-accent mr-2"></i>Post Info</h5>
+        <table style="font-size:.85rem;width:100%">
+          <tr>
+            <td style="color:var(--text-muted);padding:.25rem 0">Category</td>
+            <td style="text-align:right">
+              {% if post.category %}<a href="{% url 'blog:category_posts' post.category.slug %}">{{ post.category.name
+                }}</a>
+              {% else %}—{% endif %}
+            </td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-muted);padding:.25rem 0">Reading time</td>
+            <td style="text-align:right">{{ post.reading_time }} min</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-muted);padding:.25rem 0">Published</td>
+            <td style="text-align:right">{{ post.created_at|date:"N j, Y" }}</td>
+          </tr>
+          <tr>
+            <td style="color:var(--text-muted);padding:.25rem 0">Author</td>
+            <td style="text-align:right">{{ post.author.get_full_name|default:post.author.username }}</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Categories -->
+      <div class="sidebar-card">
+        <h5><i class="fas fa-layer-group text-accent mr-2"></i>Browse Categories</h5>
+        {% for cat in categories %}
+        <a href="{% url 'blog:category_posts' cat.slug %}" class="category-pill d-flex">
+          <span>{{ cat.name }}</span>
+          <span class="cat-count">{{ cat.posts.count }}</span>
+        </a>
+        {% endfor %}
+      </div>
+
+    </div>
+  </aside>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function copyLink() {
+    navigator.clipboard.writeText(location.href).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+      btn.style.background = 'rgba(46,204,113,.15)';
+      btn.style.color = '#27ae60';
+      setTimeout(() => {
+        btn.innerHTML = '<i class="fas fa-link"></i> Copy Link';
+        btn.style.background = '';
+        btn.style.color = '';
+      }, 2000);
+    });
+  }
+</script>
+{% endblock %}

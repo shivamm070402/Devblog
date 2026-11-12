@@ -1,0 +1,18 @@
+# GitHub repository settings
+repository:
+  name: Devblog
+  description: Technical blog built with Django, PostgreSQL and System Design focused content
+  topics:
+    - django
+    - python
+    - postgresql
+    - system-design
+    - backend
+    - technical-blog
+  visibility: public
+  has_issues: true
+  has_projects: false
+  has_wiki: false
+  allow_squash_merge: true
+  allow_merge_commit: true
+  allow_rebase_merge: true

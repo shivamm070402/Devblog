@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Background Circle -->
+  <circle cx="60" cy="60" r="55" fill="none" stroke="#6366f1" stroke-width="3"/>
+  
+  <!-- Stylized "D" letterform -->
+  <path d="M 35 35 L 55 35 C 70 35 78 43 78 60 C 78 77 70 85 55 85 L 35 85 Z M 42 42 L 42 78 L 55 78 C 65 78 68 72 68 60 C 68 48 65 42 55 42 L 42 42 Z" fill="#6366f1"/>
+  
+  <!-- Horizontal bar accent (like a desk or data flow) -->
+  <rect x="45" y="58" width="22" height="4" fill="#4f46e5" rx="2"/>
+  
+  <!-- Small circular accent dot -->
+  <circle cx="85" cy="50" r="3" fill="#6366f1" opacity="0.4"/>
+</svg>
