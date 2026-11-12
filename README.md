@@ -60,23 +60,31 @@ A modern technical blog platform built with Django, PostgreSQL, and System Desig
 ## 📸 Screenshots
 
 ### Home Page
-![Home Page](docs/screenshot-home.png)
+![DevBlog Home Page](./docs/screenshot-home.png)
 
 ### Post Detail
-![Post Detail](docs/screenshot-post.png)
+![Post Detail Page](./docs/screenshot-post.png)
 
 ### Admin Panel
-![Admin Panel](docs/screenshot-admin.png)
+![Admin Panel](./docs/screenshot-admin.png)
 
 ### Dark Mode
-![Dark Mode](docs/screenshot-dark.png)
+![Dark Mode](./docs/screenshot-dark.png)
+
+### Category Filter
+![System Design Category](./docs/screenshot-category.png)
+
+### Search Results
+![Search Results](./docs/screenshot-search.png)
+
+*To capture these screenshots: Open `docs/screenshot.html` in your browser and press `Ctrl+P` to save as PDF.*
 
 ---
 
 ## 🗄️ Database Design
 
 ### ERD
-See full database schema in [DevBlog Database Design ERD](https://raw.githubusercontent.com/shivamm070402/Devblog/main/ERD.html)
+See full database schema in [DevBlog Database Design ERD](https://raw.githubusercontent.com/shivamm070402/Devblog/main/docs/ERD.html)
 
 ### Tables
 
@@ -109,7 +117,7 @@ See full database schema in [DevBlog Database Design ERD](https://raw.githubuser
 ## 🏗️ Architecture
 
 ### System Architecture
-![System Architecture](docs/architecture.png)
+![System Architecture](./docs/architecture.png)
 
 ```
 Client → CDN → Django App → PostgreSQL
@@ -277,6 +285,11 @@ Devblog/
 │       ├── category_posts.html
 │       └── search.html
 ├── media/                    # User uploads (ignored in git)
+├── docs/                     # Screenshots and docs
+│   ├── screenshot-home.png
+│   ├── screenshot-post.png
+│   ├── screenshot-admin.png
+│   └── screenshot-category.png
 ├── .github/                  # GitHub config
 ├── .gitignore
 ├── requirements.txt
